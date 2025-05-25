@@ -3,6 +3,8 @@ import { useState } from "react";
 export const AddCategoryForm = ({ onAddCategory }) => {
   const [gifCategory, setGifCategory] = useState("");
 
+  console.log("AddCategoryForm rendered", gifCategory);
+
   const handleOnChange = (e) => {
     setGifCategory(e.target.value);
   };
@@ -16,9 +18,8 @@ export const AddCategoryForm = ({ onAddCategory }) => {
       return;
     }
 
-    onAddCategory(gifCategoryFormatted, setGifCategory);
-
-    // setGifCategory("");
+    onAddCategory(gifCategoryFormatted);
+    setGifCategory("");
   };
 
   return (
