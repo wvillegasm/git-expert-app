@@ -1,0 +1,196 @@
+/* Global Styles */
+* {
+  font-family: Helvetica, Arial, sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+body {
+  padding: 60px;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Input Styles */
+input {
+  background-color: #333;
+  border: 1px solid #6200ea;
+  border-radius: 5px;
+  color: #e0e0e0;
+  font-size: 1.2rem;
+  outline: none;
+  padding: 10px 15px;
+  width: 100%;
+}
+
+/* Heading Styles */
+h2,
+h3 {
+  color: #bb86fc;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+/* Card Grid Styles */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  margin: 0 20px 20px 0;
+  overflow: hidden;
+}
+
+.card p {
+  flex: 1;
+  font-size: 1.5rem;
+  margin-top: 5px;
+  padding: 5px 20px 0;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+}
+
+/* Paragraph Styles */
+p {
+  display: inline-block;
+  max-width: 10ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Gif Grid Styles */
+.gif-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.gif-grid div {
+  display: flex;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+}
+
+.gif-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gif-grid p {
+  max-width: 100%;
+  margin-top: 5px;
+  font-size: small;
+}
+
+/* Gif Item Card Styles */
+.gif-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.5);
+  margin: 10px;
+  overflow: hidden;
+}
+
+.gif-item img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.gif-item p {
+  background-color: #333;
+  color: #e0e0e0;
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+/* Button Styles */
+.primary-button,
+.secondary-button,
+.danger-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary-button {
+  color: #fff;
+  background-color: #646cff;
+  border: 1px solid #646cff;
+}
+
+.primary-button:hover {
+  background-color: #535bf2;
+  border-color: #535bf2;
+}
+
+.secondary-button {
+  color: #646cff;
+  background-color: transparent;
+  border: 1px solid #646cff;
+}
+
+.secondary-button:hover {
+  color: #535bf2;
+  border-color: #535bf2;
+}
+
+.danger-button {
+  color: #fff;
+  background-color: #ff4d4f;
+  border: 1px solid #ff4d4f;
+}
+
+.danger-button:hover {
+  background-color: #ff3d3f;
+  border-color: #ff3d3f;
+}
+
+/* Spacing Utilities */
+.space-right {
+  margin-right: 0.5rem;
+}
+
+.space-left {
+  margin-left: 0.5rem;
+}
+
+.space-top {
+  margin-top: 0.5rem;
+}
+
+.space-bottom {
+  margin-bottom: 0.5rem;
+}
