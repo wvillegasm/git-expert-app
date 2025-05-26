@@ -2,8 +2,6 @@
 
 A React application that allows users to search and display GIFs using the GIPHY API.
 
-## Changelog
-
 ### Version 1.0.0
 
 - Initial release
@@ -108,7 +106,7 @@ npm run build
 
 The build output will be in the `dist` directory.
 
-# React + Vite
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
@@ -117,7 +115,7 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Using Keys in React
+### Using Keys in React
 
 When rendering lists of elements in React, it is important to provide a unique `key` prop for each element. This helps React identify which items have changed, are added, or are removed, improving performance and preventing bugs.
 
@@ -125,7 +123,7 @@ Using the `index` of an array as a key is generally discouraged, especially if t
 
 Never use index into an array to create a key for a React component. This is an anti-pattern that can lead to bugs in your application. Instead, use a unique identifier for each item in the array, such as an ID or a unique property.
 
-## For example:
+### For example:
 
 ```jsx
 const items = ["apple", "banana", "orange"];
