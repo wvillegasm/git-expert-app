@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GifItem Component > should match snapshot 1`] = `
+<div>
+  <div
+    class="gif-item"
+  >
+    <img
+      alt="Dragon Ball"
+      src="https://example.com/goku.gif"
+    />
+    <p>
+      Dragon Ball
+    </p>
+  </div>
+</div>
+`;
