@@ -4,8 +4,6 @@ import { AddCategoryForm, GifGrid } from "./components";
 export const GifExpertApp = () => {
   const [categories, setCategories] = useState([]);
 
-  console.log("GifExpertApp rendered", categories);
-
   const handleAddCategory = (category) => {
     if (!categories.includes(category)) {
       setCategories([category, ...categories]);
