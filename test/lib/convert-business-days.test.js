@@ -219,8 +219,10 @@ describe('convertBusinessDays function', () => {
     expect(convertBusinessDays('2024-11-04', '2024-11-08')).toBe(5); // Mon-Fri
   });
 
-  it('should return 2 for a range that includes weekends', () => {
-    expect(convertBusinessDays('2024-11-08', '2024-11-11')).toBe(2); // Fri, Mon (Sat, Sun are weekends)
+  it('should return 1 for a range that includes weekends', () => {
+    // 2024-11-08 (Fri), 2024-11-09 (Sat), 2024-11-10 (Sun), 2024-11-11 (Mon)
+    // 2024-11-11 it's a Monday and Veterans Day
+    expect(convertBusinessDays('2024-11-08', '2024-11-11')).toBe(1); // Fri, Mon (Sat, Sun are weekends)
   });
 
   it('should return 4 for a range that includes Christmas Day', () => {

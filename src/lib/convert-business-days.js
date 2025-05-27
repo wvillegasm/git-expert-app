@@ -227,23 +227,29 @@ export const getHolidays = (year) => {
 
 // Helper function to check if a date is a business day
 const isBusinessDay = (date, yearHolidaysList) => {
-  const day = date.getDay();
+  const day = date.getUTCDay();
+
   if (day === 0 || day === 6) { // Sunday or Saturday
     return false;
   }
 
   // Normalize the current date to midnight for comparison
-  const currentDateNormalized = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  const currentDateNormalized = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()).getTime();
 
   for (const holiday of yearHolidaysList) {
     if (holiday) { // Ensure holiday is not null
         // Normalize holiday date to midnight for comparison
-        const holidayNormalized = new Date(holiday.getFullYear(), holiday.getMonth(), holiday.getDate()).getTime();
+        const holidayNormalized = new Date(
+          holiday.getUTCFullYear(), holiday.getUTCMonth(), holiday.getUTCDate()
+        ).getTime();
+
+        // Check if the current date matches any holiday
         if (currentDateNormalized === holidayNormalized) {
             return false; // It's a holiday
         }
     }
   }
+
   return true; // It's a business day
 };
 
@@ -255,7 +261,7 @@ const isBusinessDay = (date, yearHolidaysList) => {
  * @returns
  */
 export const convertBusinessDays = (initialDateStr, endDateStr) => {
-  let count = 0;
+  let businessDays = [];
   // Create dates in UTC to avoid issues with timezones and DST
   const initialDate = new Date(initialDateStr + 'T00:00:00Z');
   const finalDate = new Date(endDateStr + 'T00:00:00Z');
@@ -264,8 +270,8 @@ export const convertBusinessDays = (initialDateStr, endDateStr) => {
     return 0;
   }
 
-  let currentDate = new Date(initialDate);
-  let currentYear = -1;
+  let currentDate = new Date(initialDate); // ?
+  let currentYear = -1; // ?
   let yearHolidaysForIsBusinessDay; // This list will include Inauguration Day
 
   while (currentDate <= finalDate) {
@@ -275,6 +281,7 @@ export const convertBusinessDays = (initialDateStr, endDateStr) => {
       const inaugurationDay = getInaugurationDay(year); // Get Inauguration Day for the current year
 
       yearHolidaysForIsBusinessDay = [...baseHolidays]; // Start with base holidays
+
       if (inaugurationDay) {
         // Add Inauguration Day if it exists, ensuring no time part comparison issues
         const inaugurationDayNormalizedTime = new Date(inaugurationDay.getFullYear(), inaugurationDay.getMonth(), inaugurationDay.getDate()).getTime();
@@ -294,10 +301,11 @@ export const convertBusinessDays = (initialDateStr, endDateStr) => {
 
     // Create a new Date object for isBusinessDay to avoid modification issues if any
     if (isBusinessDay(new Date(currentDate), yearHolidaysForIsBusinessDay)) {
-      count++;
+      businessDays.push(new Date(currentDate));
     }
+
     currentDate.setUTCDate(currentDate.getUTCDate() + 1); // Increment day in UTC
   }
 
-  return count;
+  return businessDays.length;
 };
