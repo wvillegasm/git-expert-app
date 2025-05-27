@@ -1,111 +1,127 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { useFetchGifs } from '../../src/hooks/useFetchGifs';
-import { getGifs } from '../../src/helpers/getGifs'; // Path to the original module
-
-// Mock the getGifs helper
-vi.mock('../../src/helpers/getGifs');
+import { server } from '../mocks/server';
 
 describe('useFetchGifs hook', () => {
   const mockCategory = 'Dragon Ball';
   const mockGifs = [
-    { id: 'abc', title: 'Goku GIF', url: 'http://goku.gif' },
-    { id: 'def', title: 'Vegeta GIF', url: 'http://vegeta.gif' },
+    { id: 'abc', title: 'Goku GIF', images: { downsized_medium: { url: 'http://goku.gif' } } },
+    { id: 'def', title: 'Vegeta GIF', images: { downsized_medium: { url: 'http://vegeta.gif' } } },
   ];
 
   beforeEach(() => {
-    // Reset mocks before each test
-    vi.clearAllMocks();
+    // Reset any request handlers that we may add during the tests
+    server.resetHandlers();
   });
 
   it('should return the correct initial state', () => {
-    getGifs.mockResolvedValueOnce([]); // Ensure getGifs doesn't throw during initial render
+    // Mock API to return empty array for initial render
+    server.use(
+      http.get('https://api.giphy.com/v1/gifs/search', () => {
+        return HttpResponse.json({ data: [] });
+      })
+    );
+
     const { result } = renderHook(() => useFetchGifs(mockCategory));
     expect(result.current.images).toEqual([]);
     expect(result.current.isLoading).toBe(true);
   });
 
   it('should call getGifs with the category on mount and update state on success', async () => {
-    getGifs.mockResolvedValueOnce(mockGifs);
+    // Mock API to return mock data
+    server.use(
+      http.get('https://api.giphy.com/v1/gifs/search', ({ request }) => {
+        const url = new URL(request.url);
+        expect(url.searchParams.get('q')).toBe(mockCategory);
+        return HttpResponse.json({ data: mockGifs });
+      })
+    );
 
     const { result } = renderHook(() => useFetchGifs(mockCategory));
 
-    // Check initial state (isLoading might already be false if getGifs resolves very quickly)
-    // For more robust testing of loading state, we might need to delay mock resolve
-    expect(result.current.isLoading).toBe(true); // Check before effects complete
+    // Check initial state
+    expect(result.current.isLoading).toBe(true);
 
-    // Wait for the hook to process the promise
-    await act(async () => {
-      // Let the useEffect run and promises resolve
-      // For getGifs.mockResolvedValueOnce, this ensures the .then() in getImages executes
-    });
-    
-    expect(getGifs).toHaveBeenCalledTimes(1);
-    expect(getGifs).toHaveBeenCalledWith(mockCategory);
-    
-    // Need to await for the state updates triggered by the async operation
-    // Vitest/testing-library's `waitFor` can be useful here if act alone is not enough
-    // or if there are chained promises/multiple state updates.
-    // For this specific structure, after getGifs resolves and setImages/setIsLoading are called,
-    // the state should be updated.
-
-    // Re-check after async operations have completed
-    await vi.waitFor(() => { // vitest utility
-        expect(result.current.images).toEqual(mockGifs);
-        expect(result.current.isLoading).toBe(false);
+    // Wait for the hook to process the API response
+    await waitFor(() => {
+      expect(result.current.images).toEqual([
+        { id: 'abc', title: 'Goku GIF', url: 'http://goku.gif' },
+        { id: 'def', title: 'Vegeta GIF', url: 'http://vegeta.gif' },
+      ]);
+      expect(result.current.isLoading).toBe(false);
     });
   });
 
   it('should set isLoading to false even if getGifs returns an empty array', async () => {
-    getGifs.mockResolvedValueOnce([]); // Simulate no GIFs found
+    // Mock API to return empty data
+    server.use(
+      http.get('https://api.giphy.com/v1/gifs/search', () => {
+        return HttpResponse.json({ data: [] });
+      })
+    );
 
     const { result } = renderHook(() => useFetchGifs(mockCategory));
 
-    await act(async () => {}); // Allow useEffect to run
-
-    await vi.waitFor(() => {
-        expect(result.current.images).toEqual([]);
-        expect(result.current.isLoading).toBe(false);
+    await waitFor(() => {
+      expect(result.current.images).toEqual([]);
+      expect(result.current.isLoading).toBe(false);
     });
   });
-  
+
   it('should recall getGifs if the category changes', async () => {
-    getGifs.mockResolvedValue(mockGifs); // Default mock for first render
     const initialCategory = 'Naruto';
     const newCategory = 'Bleach';
+    const initialGifs = [
+      { id: 'naruto1', title: 'Naruto GIF', images: { downsized_medium: { url: 'http://naruto.gif' } } }
+    ];
+    const newGifs = [
+      { id: 'ichigo1', title: 'Ichigo GIF', images: { downsized_medium: { url: 'http://ichigo.gif' } } }
+    ];
+
+    // Mock API for initial category
+    server.use(
+      http.get('https://api.giphy.com/v1/gifs/search', ({ request }) => {
+        const url = new URL(request.url);
+        const category = url.searchParams.get('q');
+
+        if (category === initialCategory) {
+          return HttpResponse.json({ data: initialGifs });
+        } else if (category === newCategory) {
+          return HttpResponse.json({ data: newGifs });
+        }
+        return HttpResponse.json({ data: [] });
+      })
+    );
 
     const { result, rerender } = renderHook(
       ({ category }) => useFetchGifs(category),
       { initialProps: { category: initialCategory } }
     );
 
-    await act(async () => {}); // Initial effect
-
-    await vi.waitFor(() => {
-      expect(getGifs).toHaveBeenCalledTimes(1);
-      expect(getGifs).toHaveBeenCalledWith(initialCategory);
-      expect(result.current.isLoading).toBe(false); // After first load
+    // Wait for initial load
+    await waitFor(() => {
+      expect(result.current.images).toEqual([
+        { id: 'naruto1', title: 'Naruto GIF', url: 'http://naruto.gif' }
+      ]);
+      expect(result.current.isLoading).toBe(false);
     });
-    
+
     // Change the category
-    getGifs.mockClear(); // Clear previous call counts
-    getGifs.mockResolvedValueOnce([ { id: 'xyz', title: 'Ichigo', url: 'http://ichigo.gif'} ]); // New data for new category
-    
     act(() => {
-        rerender({ category: newCategory });
+      rerender({ category: newCategory });
     });
 
-    // The useEffect should run again due to category change
-    // isLoading should become true again briefly
-    expect(result.current.isLoading).toBe(true); // Check immediately after rerender and effect trigger
+    // Should become loading again
+    expect(result.current.isLoading).toBe(true);
 
-    await act(async () => {}); // Allow new effect to run
-
-    await vi.waitFor(() => {
-        expect(getGifs).toHaveBeenCalledTimes(1);
-        expect(getGifs).toHaveBeenCalledWith(newCategory);
-        expect(result.current.images).toEqual([ { id: 'xyz', title: 'Ichigo', url: 'http://ichigo.gif'} ]);
-        expect(result.current.isLoading).toBe(false);
+    // Wait for new data to load
+    await waitFor(() => {
+      expect(result.current.images).toEqual([
+        { id: 'ichigo1', title: 'Ichigo GIF', url: 'http://ichigo.gif' }
+      ]);
+      expect(result.current.isLoading).toBe(false);
     });
   });
 
