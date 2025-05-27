@@ -19,19 +19,22 @@ export const getNewYearsDay = (year) => {
 };
 
 // Birthday of Martin Luther King, Jr. (Third Monday in January)
-// The third Monday in January is the day set aside to observe the birthday of Martin Luther King, Jr.
-// The holiday is observed on the third Monday in January each year, which is around King's birthday, January 15.
 export const getMLKDay = (year) => {
-  const januaryFirst = new Date(year, 0, 1); // January 1st of the given year
+  const date = new Date(year, 0, 1); // January 1st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday
 
-  // Day of the week for January 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-  const dayOfWeek = januaryFirst.getDay();
+  // Calculate days to add to reach the first Monday
+  // (1 - dayOfWeek + 7) % 7 ensures we move forward to the next Monday
+  // If dayOfWeek is Monday (1), (1-1+7)%7 = 0.
+  // If dayOfWeek is Sunday (0), (1-0+7)%7 = 1.
+  // If dayOfWeek is Tuesday (2), (1-2+7)%7 = 6.
+  let daysToAdd = (1 - dayOfWeek + 7) % 7;
 
-  // Calculate the offset to the third Monday
-  // 14 days to get to the third week, plus the offset to the next Monday
-  const offset = (dayOfWeek === 0 ? 1 : 8 - dayOfWeek) + 14;
+  // Add 14 more days to get to the third Monday (first Monday + 2 weeks)
+  daysToAdd += 14;
 
-  return new Date(year, 0, 1 + offset); // January 1st + offset days
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
 };
 
 /**
@@ -67,28 +70,31 @@ export const getInaugurationDay = (year) => {
 
 // Washington’s Birthday, the third Monday in February.
 export const getWashingtonBirthday = (year) => {
-  const februaryFirst = new Date(year, 1, 1); // February 1st of the given year
-  const dayOfWeek = februaryFirst.getDay(); // Day of the week for February 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const date = new Date(year, 1, 1); // February 1st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday
 
-  // Calculate the offset to the third Monday
-  // const offset = (dayOfWeek === 0 ? 1 : 8 - dayOfWeek) + 14; // 14 days to get to the third week, plus the offset to the next Monday
-  const offset = (dayOfWeek <= 2 ? ((3.5) * Math.pow(dayOfWeek, 2)) - (4.5 * dayOfWeek) + 1 : -dayOfWeek + 8) + 14;
-  console.log(offset)
-  return new Date(year, 1, 1 + offset); // February 1st + offset days
+  // Calculate days to add to reach the first Monday
+  let daysToAdd = (1 - dayOfWeek + 7) % 7; // 1 for Monday
+  // Add 14 more days to get to the third Monday
+  daysToAdd += 14;
+
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
 };
 
 // Memorial Day, the last Monday in May.
 export const getMemorialDay = (year) => {
-  const mayThirtyFirst = new Date(year, 4, 31); // May 31st of the given year
+  const date = new Date(year, 4, 31); // May 31st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday
 
-  // Day of the week for May 31st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-  const dayOfWeek = mayThirtyFirst.getDay();
+  // Calculate days to subtract to reach the previous Monday
+  // If it's Monday (1), subtract 0.
+  // If it's Sunday (0), subtract 6 to get to the previous Monday.
+  // If it's Tuesday (2), subtract 1.
+  const daysToSubtract = (dayOfWeek === 0) ? 6 : (dayOfWeek - 1);
 
-  // Calculate the offset to the last Monday
-  // 31 days in May - day of the week for May 31st
-  const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-  return new Date(year, 4, 31 - offset); // May 31st - offset days
+  date.setDate(date.getDate() - daysToSubtract);
+  return date;
 };
 
 
@@ -126,32 +132,30 @@ export const getIndependenceDay = (year) => {
 
 // Labor Day, the first Monday in September.
 export const getLaborDay = (year) => {
-  const septemberFirst = new Date(year, 8, 1); // September 1st of the given year
-  const dayOfWeek = septemberFirst.getDay(); // Day of the week for September 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const date = new Date(year, 8, 1); // September 1st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday
 
-  // Calculate the offset to the first Monday
-  // ```markdown
-  // f(x) =
-  // ⎧ (7/2)x² - (9/2)x + 1,   if x ≤ 2
-  // ⎨ -x + 8,                 if x ≥ 3
-  // ⎩
-  // ```
-  const offset = dayOfWeek <= 2 ? ((3.5) * Math.pow(dayOfWeek, 2)) - (4.5 * dayOfWeek) + 1 : -dayOfWeek + 8;
-  console.log(dayOfWeek)
-  console.log(offset);
+  // If dayOfWeek is already Monday (1), add 0 days.
+  // If dayOfWeek is Sunday (0), add 1 day ((1 - 0 + 7) % 7 = 1).
+  // If dayOfWeek is Tuesday (2), add 6 days ((1 - 2 + 7) % 7 = 6).
+  const daysToAdd = (1 - dayOfWeek + 7) % 7;
 
-  return new Date(year, 8, 1 + offset); // September 1st + offset days
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
 };
 
 // Columbus Day, the second Monday in October.
 export const getColumbusDay = (year) => {
-  const octoberFirst = new Date(year, 9, 1); // October 1st of the given year
-  const dayOfWeek = octoberFirst.getDay(); // Day of the week for October 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  const date = new Date(year, 9, 1); // October 1st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday
 
-  // Calculate the offset to the second Monday
-  const offset = (dayOfWeek === 0 ? 1 : 8 - dayOfWeek) + 7;
+  // Calculate days to add to reach the first Monday
+  let daysToAdd = (1 - dayOfWeek + 7) % 7; // 1 for Monday
+  // Add 7 more days to get to the second Monday
+  daysToAdd += 7;
 
-  return new Date(year, 9, 1 + offset); // October 1st + offset days
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
 };
 
 // Veterans Day, November 11.
@@ -172,15 +176,20 @@ export const getVeteransDay = (year) => {
 
 // Thanksgiving Day, the fourth Thursday in November.
 export const getThanksgivingDay = (year) => {
-  const novemberFirst = new Date(year, 10, 1); // November 1st of the given year
+  const date = new Date(year, 10, 1); // November 1st
+  const dayOfWeek = date.getDay(); // 0 for Sunday, ..., 4 for Thursday
 
-  // Day of the week for November 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-  const dayOfWeek = novemberFirst.getDay();
+  // Calculate days to add to reach the first Thursday
+  // If dayOfWeek is Thursday (4), (4-4+7)%7 = 0.
+  // If dayOfWeek is Sunday (0), (4-0+7)%7 = 4.
+  // If dayOfWeek is Friday (5), (4-5+7)%7 = 6.
+  let daysToAdd = (4 - dayOfWeek + 7) % 7; // 4 for Thursday
 
-  // Calculate the offset to the fourth Thursday
-  const offset = (dayOfWeek <= 4 ? 4 - dayOfWeek : 11 - dayOfWeek) + 21;
+  // Add 21 more days (3 weeks) to get to the fourth Thursday
+  daysToAdd += 21;
 
-  return new Date(year, 10, 1 + offset); // November 1st + offset days
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
 };
 
 // Christmas Day, December 25.
@@ -216,24 +225,78 @@ export const getHolidays = (year) => {
   ];
 };
 
+// Helper function to check if a date is a business day
+const isBusinessDay = (date, yearHolidaysList) => {
+  const day = date.getDay();
+  if (day === 0 || day === 6) { // Sunday or Saturday
+    return false;
+  }
+
+  // Normalize the current date to midnight for comparison
+  const currentDateNormalized = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+  for (const holiday of yearHolidaysList) {
+    if (holiday) { // Ensure holiday is not null
+        // Normalize holiday date to midnight for comparison
+        const holidayNormalized = new Date(holiday.getFullYear(), holiday.getMonth(), holiday.getDate()).getTime();
+        if (currentDateNormalized === holidayNormalized) {
+            return false; // It's a holiday
+        }
+    }
+  }
+  return true; // It's a business day
+};
+
 
 /**
  *
- * @param {string} initialDate
- * @param {string} endDate
+ * @param {string} initialDateStr
+ * @param {string} endDateStr
  * @returns
  */
-export const convertBusinessDays = (initialDate, endDate) => {
+export const convertBusinessDays = (initialDateStr, endDateStr) => {
   let count = 0;
+  // Create dates in UTC to avoid issues with timezones and DST
+  const initialDate = new Date(initialDateStr + 'T00:00:00Z');
+  const finalDate = new Date(endDateStr + 'T00:00:00Z');
+
+  if (initialDate > finalDate) {
+    return 0;
+  }
 
   let currentDate = new Date(initialDate);
-  const finalDate = new Date(endDate);
+  let currentYear = -1;
+  let yearHolidaysForIsBusinessDay; // This list will include Inauguration Day
 
   while (currentDate <= finalDate) {
-    if (isBusinessDay(currentDate)) {
+    const year = currentDate.getUTCFullYear(); // Use UTC year
+    if (year !== currentYear) {
+      const baseHolidays = getHolidays(year); // Does not include Inauguration Day
+      const inaugurationDay = getInaugurationDay(year); // Get Inauguration Day for the current year
+
+      yearHolidaysForIsBusinessDay = [...baseHolidays]; // Start with base holidays
+      if (inaugurationDay) {
+        // Add Inauguration Day if it exists, ensuring no time part comparison issues
+        const inaugurationDayNormalizedTime = new Date(inaugurationDay.getFullYear(), inaugurationDay.getMonth(), inaugurationDay.getDate()).getTime();
+        let alreadyExists = false;
+        for(const h of yearHolidaysForIsBusinessDay) {
+            if (new Date(h.getFullYear(), h.getMonth(), h.getDate()).getTime() === inaugurationDayNormalizedTime) {
+                alreadyExists = true;
+                break;
+            }
+        }
+        if (!alreadyExists) {
+          yearHolidaysForIsBusinessDay.push(inaugurationDay);
+        }
+      }
+      currentYear = year;
+    }
+
+    // Create a new Date object for isBusinessDay to avoid modification issues if any
+    if (isBusinessDay(new Date(currentDate), yearHolidaysForIsBusinessDay)) {
       count++;
     }
-    currentDate.setDate(currentDate.getDate() + 1);
+    currentDate.setUTCDate(currentDate.getUTCDate() + 1); // Increment day in UTC
   }
 
   return count;
