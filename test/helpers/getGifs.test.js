@@ -9,6 +9,13 @@ describe('getGifs helper function', () => {
   beforeEach(() => {
     // Reset any handlers that might be added in individual tests
     server.resetHandlers();
+
+    // Mock the environment variable for all tests
+    vi.stubEnv('VITE_GIPHY_API_KEY', 'test-api-key');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('should call the Giphy API with the correct URL and parameters', async () => {
@@ -18,11 +25,10 @@ describe('getGifs helper function', () => {
     server.use(
       http.get('https://api.giphy.com/v1/gifs/search', ({ request }) => {
         const url = new URL(request.url);
-
         // Verify the correct parameters are being sent
         expect(url.searchParams.get('q')).toBe(category);
         expect(url.searchParams.get('limit')).toBe(LIMIT_GIFS.toString());
-        expect(url.searchParams.get('api_key')).toBeTruthy(); // Just verify it exists
+        expect(url.searchParams.get('api_key')).toBe('test-api-key');
 
         return HttpResponse.json({ data: [] });
       })
@@ -34,6 +40,7 @@ describe('getGifs helper function', () => {
 
   it('should process the API response and return mapped GIF objects', async () => {
     const category = 'dogs';
+
     const mockData = [
       { id: '123', title: 'Dog 1', images: { downsized_medium: { url: 'http://dog1.gif' } } },
       { id: '456', title: 'Dog 2', images: { downsized_medium: { url: 'http://dog2.gif' } } },
@@ -51,6 +58,7 @@ describe('getGifs helper function', () => {
       { id: '123', title: 'Dog 1', url: 'http://dog1.gif' },
       { id: '456', title: 'Dog 2', url: 'http://dog2.gif' },
     ]);
+
     expect(gifs.length).toBe(LIMIT_GIFS);
   });
 
