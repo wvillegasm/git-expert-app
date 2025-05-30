@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { getChristmasDay, getColumbusDay, getHolidays, getInaugurationDay, getIndependenceDay, getJuneteenth, getLaborDay, getMemorialDay, getMLKDay, getNewYearsDay, getThanksgivingDay, getVeteransDay, getWashingtonBirthday } from './convert-business-days';
+import { convertBusinessDays, getChristmasDay, getColumbusDay, getHolidays, getInaugurationDay, getIndependenceDay, getJuneteenth, getLaborDay, getMemorialDay, getMLKDay, getNewYearsDay, getThanksgivingDay, getVeteransDay, getWashingtonBirthday } from '../../src/lib/convert-business-days.js';
 
-describe('convertBusinessDays', () => {
+describe('Individual holiday functions', () => {
   it('returns January 20, 2025 when getMLKDay receives 2025', () => {
     const mlkDay2025 = getMLKDay(2025);
     const mlkDayFormattedDate = mlkDay2025.toISOString().split('T')[0];
@@ -211,5 +211,105 @@ describe('convertBusinessDays', () => {
       '2021-11-25',
       '2021-12-24',
     ]);
+  });
+});
+
+describe('convertBusinessDays function', () => {
+  it('should return 5 for a simple date range with no weekends or holidays', () => {
+    expect(convertBusinessDays('2024-11-04', '2024-11-08')).toBe(5); // Mon-Fri
+  });
+
+  it('should return 1 for a range that includes weekends', () => {
+    // 2024-11-08 (Fri), 2024-11-09 (Sat), 2024-11-10 (Sun), 2024-11-11 (Mon)
+    // 2024-11-11 it's a Monday and Veterans Day
+    expect(convertBusinessDays('2024-11-08', '2024-11-11')).toBe(1); // Fri, Mon (Sat, Sun are weekends)
+  });
+
+  it('should return 4 for a range that includes Christmas Day', () => {
+    // 2024: Dec 23 (Mon), Dec 24 (Tue), Dec 25 (Wed - Christmas), Dec 26 (Thu), Dec 27 (Fri)
+    expect(convertBusinessDays('2024-12-23', '2024-12-27')).toBe(4);
+  });
+
+  it('should return 2 for a range with New Year Day on Sunday, observed on Monday', () => {
+    // 2022-12-30 (Fri)
+    // 2022-12-31 (Sat) - Weekend
+    // 2023-01-01 (Sun) - New Year's Day (Weekend)
+    // 2023-01-02 (Mon) - New Year's Day (Observed)
+    // 2023-01-03 (Tue)
+    expect(convertBusinessDays('2022-12-30', '2023-01-03')).toBe(2); // Fri, Tue
+  });
+
+  it('should return 3 for a range that spans across a month-end', () => {
+    // Oct 30 (Wed), Oct 31 (Thu), Nov 1 (Fri)
+    expect(convertBusinessDays('2024-10-30', '2024-11-01')).toBe(3);
+  });
+
+  it('should return 3 for a range that spans across a year-end', () => {
+    // 2024-12-30 (Mon), 2024-12-31 (Tue)
+    // 2025-01-01 (Wed - New Year's Day)
+    // 2025-01-02 (Thu), 2025-01-03 (Fri)
+    expect(convertBusinessDays('2024-12-30', '2025-01-03')).toBe(4); // Mon, Tue, Thu, Fri
+  });
+
+  it('should return 4 for a range including Inauguration Day in an applicable year', () => {
+    // 2025: Jan 17 (Fri), Jan 20 (Mon - Inauguration Day & MLK Day), Jan 21 (Tue), Jan 22 (Wed), Jan 23 (Thu)
+    // MLK Day is Jan 20, 2025. Inauguration Day is Jan 20, 2025. They overlap.
+    // Result should be: Fri, Tue, Wed, Thu
+    expect(convertBusinessDays('2025-01-17', '2025-01-23')).toBe(4);
+  });
+
+  it('should return 1 for a zero-day range on a business day', () => {
+    expect(convertBusinessDays('2024-11-04', '2024-11-04')).toBe(1); // Monday
+  });
+
+  it('should return 0 for a zero-day range on a weekend', () => {
+    expect(convertBusinessDays('2024-11-02', '2024-11-02')).toBe(0); // Saturday
+  });
+
+  it('should return 0 for a zero-day range on a holiday', () => {
+    expect(convertBusinessDays('2024-12-25', '2024-12-25')).toBe(0); // Christmas Day
+  });
+
+  it('should return 0 for an invalid range (end date before start date)', () => {
+    expect(convertBusinessDays('2024-11-08', '2024-11-04')).toBe(0);
+  });
+
+  it('should calculate business days correctly for a longer span with multiple holidays', () => {
+    // From 2023-12-18 (Mon) to 2024-01-05 (Fri)
+    // Holidays in this range:
+    // Christmas Day 2023: 2023-12-25 (Mon)
+    // New Year's Day 2024: 2024-01-01 (Mon)
+    // Total days: 19
+    // Weekends:
+    // Dec 23, 24 (Sat, Sun)
+    // Dec 30, 31 (Sat, Sun)
+    // Business days = Total days - weekend days - holidays
+    // Total days in range (inclusive) = 19
+    // Weekend days: Dec 23, 24, 30, 31 = 4 days
+    // Holidays: Dec 25 (Christmas), Jan 1 (New Year) = 2 days
+    // Expected: 19 - 4 - 2 = 13
+    expect(convertBusinessDays('2023-12-18', '2024-01-05')).toBe(13);
+  });
+
+   it('should handle Juneteenth correctly when it falls on a weekday', () => {
+    // Juneteenth 2025 is on Thursday, June 19
+    // 2025-06-18 (Wed), 2025-06-19 (Thu - Juneteenth), 2025-06-20 (Fri)
+    expect(convertBusinessDays('2025-06-18', '2025-06-20')).toBe(2); // Wed, Fri
+  });
+
+  it('should handle Juneteenth observed on Friday when it falls on Saturday', () => {
+    // Juneteenth 2027 is on Saturday, June 19. Observed on Friday, June 18.
+    // 2027-06-17 (Thu), 2027-06-18 (Fri - Juneteenth observed), 2027-06-21 (Mon)
+    // 2027-06-19 (Sat - Weekend, Actual Juneteenth)
+    // 2027-06-20 (Sun - Weekend)
+    expect(convertBusinessDays('2027-06-17', '2027-06-21')).toBe(2); // Thu, Mon
+  });
+
+  it('should handle Juneteenth observed on Monday when it falls on Sunday', () => {
+    // Juneteenth 2022 is on Sunday, June 19. Observed on Monday, June 20.
+    // 2022-06-17 (Fri), 2022-06-20 (Mon - Juneteenth observed), 2022-06-21 (Tue)
+    // 2022-06-18 (Sat - Weekend)
+    // 2022-06-19 (Sun - Weekend, Actual Juneteenth)
+    expect(convertBusinessDays('2022-06-17', '2022-06-21')).toBe(2); // Fri, Tue
   });
 });

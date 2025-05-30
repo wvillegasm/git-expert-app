@@ -1,9 +1,9 @@
 import { useState } from "react";
 
+const MIN_CATEGORY_LENGTH = 2;
+
 export const AddCategoryForm = ({ onAddCategory }) => {
   const [gifCategory, setGifCategory] = useState("");
-
-  console.log("AddCategoryForm rendered", gifCategory);
 
   const handleOnChange = (e) => {
     setGifCategory(e.target.value);
@@ -14,7 +14,7 @@ export const AddCategoryForm = ({ onAddCategory }) => {
 
     const gifCategoryFormatted = gifCategory.trim().toUpperCase();
 
-    if (gifCategoryFormatted.length < 2) {
+    if (gifCategoryFormatted.length < MIN_CATEGORY_LENGTH) {
       return;
     }
 
