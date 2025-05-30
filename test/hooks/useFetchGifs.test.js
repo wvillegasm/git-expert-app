@@ -6,7 +6,6 @@ import { server } from '../mocks/server';
 
 describe('useFetchGifs hook', () => {
   const mockCategory = 'Dragon Ball';
-
   const mockGifs = [
     { id: 'abc', title: 'Goku GIF', images: { downsized_medium: { url: 'http://goku.gif' } } },
     { id: 'def', title: 'Vegeta GIF', images: { downsized_medium: { url: 'http://vegeta.gif' } } },
@@ -124,7 +123,6 @@ describe('useFetchGifs hook', () => {
       expect(result.current.images).toEqual([
         { id: 'ichigo1', title: 'Ichigo GIF', url: 'http://ichigo.gif' }
       ]);
-
       expect(result.current.isLoading).toBe(false);
     });
   });

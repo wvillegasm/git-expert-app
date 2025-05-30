@@ -40,7 +40,6 @@ describe('getGifs helper function', () => {
 
   it('should process the API response and return mapped GIF objects', async () => {
     const category = 'dogs';
-
     const mockData = [
       { id: '123', title: 'Dog 1', images: { downsized_medium: { url: 'http://dog1.gif' } } },
       { id: '456', title: 'Dog 2', images: { downsized_medium: { url: 'http://dog2.gif' } } },
@@ -58,7 +57,6 @@ describe('getGifs helper function', () => {
       { id: '123', title: 'Dog 1', url: 'http://dog1.gif' },
       { id: '456', title: 'Dog 2', url: 'http://dog2.gif' },
     ]);
-
     expect(gifs.length).toBe(LIMIT_GIFS);
   });
 
