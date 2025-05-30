@@ -29,16 +29,21 @@ jobs:
       - name: Determine bump type
         id: bump
         run: |
-          if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
-            echo "bump_type=patch" >> "$GITHUB_OUTPUT"
-          elif [[ "$GITHUB_REF" == refs/heads/release/* ]]; then
-            echo "bump_type=major" >> "$GITHUB_OUTPUT"
-          elif [[ "$GITHUB_REF" == refs/heads/develop" ]]; then
-            echo "bump_type=minor" >> "$GITHUB_OUTPUT"
-          else
-            echo "Unknown branch pattern. Exiting."
-            exit 1
-          fi
+          case "$GITHUB_REF" in
+            refs/heads/feature/*)
+              echo "bump_type=patch" >> "$GITHUB_OUTPUT"
+              ;;
+            refs/heads/release/*)
+              echo "bump_type=major" >> "$GITHUB_OUTPUT"
+              ;;
+            refs/heads/develop)
+              echo "bump_type=minor" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unknown branch pattern. Exiting."
+              exit 1
+              ;;
+          esac
 
       - name: Bump version
         id: versioning
