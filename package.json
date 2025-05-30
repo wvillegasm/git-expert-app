@@ -8,7 +8,11 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run --watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui --watch",
+    "test:ui:coverage": "vitest --ui --coverage --watch",
+    "test:watch": "vitest --watch"
   },
   "dependencies": {
     "react": "^18.3.1",

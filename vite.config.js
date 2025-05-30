@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: "./src/setupTests.js",
+    env: {
+      VITE_GIPHY_API_KEY: 'test-api-key'
+    },
     // you might want to disable the `css: true` line, since we don't have
     // tests that rely on CSS -- and parsing CSS is slow.
     // I'm leaving it in here because often people want to parse CSS in tests.
