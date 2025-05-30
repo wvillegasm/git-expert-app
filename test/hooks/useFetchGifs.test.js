@@ -73,9 +73,11 @@ describe('useFetchGifs hook', () => {
   it('should recall getGifs if the category changes', async () => {
     const initialCategory = 'Naruto';
     const newCategory = 'Bleach';
+
     const initialGifs = [
       { id: 'naruto1', title: 'Naruto GIF', images: { downsized_medium: { url: 'http://naruto.gif' } } }
     ];
+
     const newGifs = [
       { id: 'ichigo1', title: 'Ichigo GIF', images: { downsized_medium: { url: 'http://ichigo.gif' } } }
     ];

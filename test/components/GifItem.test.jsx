@@ -14,9 +14,9 @@ describe("GifItem Component", () => {
   test("should render image with correct URL and ALT attributes", () => {
     render(<GifItem title={title} url={url} />);
 
-    const img = screen.getByRole("img");
-    expect(img.src).toBe(url);
-    expect(img.alt).toBe(title);
+    const { src, alt } = screen.getByRole("img");
+    expect(src).toBe(url);
+    expect(alt).toBe(title);
   });
 
   test("should render title in a paragraph", () => {
@@ -28,7 +28,7 @@ describe("GifItem Component", () => {
   test("should have gif-item class", () => {
     render(<GifItem title={title} url={url} />);
 
-    const div = screen.getByRole("img").parentElement;
-    expect(div.className).toContain("gif-item");
+    const { className } = screen.getByRole("img").parentElement;
+    expect(className).toContain("gif-item");
   });
 });

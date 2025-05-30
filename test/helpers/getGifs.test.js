@@ -9,6 +9,13 @@ describe('getGifs helper function', () => {
   beforeEach(() => {
     // Reset any handlers that might be added in individual tests
     server.resetHandlers();
+
+    // Mock the environment variable for all tests
+    vi.stubEnv('VITE_GIPHY_API_KEY', 'test-api-key');
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('should call the Giphy API with the correct URL and parameters', async () => {
@@ -18,11 +25,10 @@ describe('getGifs helper function', () => {
     server.use(
       http.get('https://api.giphy.com/v1/gifs/search', ({ request }) => {
         const url = new URL(request.url);
-
         // Verify the correct parameters are being sent
         expect(url.searchParams.get('q')).toBe(category);
         expect(url.searchParams.get('limit')).toBe(LIMIT_GIFS.toString());
-        expect(url.searchParams.get('api_key')).toBeTruthy(); // Just verify it exists
+        expect(url.searchParams.get('api_key')).toBe('test-api-key');
 
         return HttpResponse.json({ data: [] });
       })
