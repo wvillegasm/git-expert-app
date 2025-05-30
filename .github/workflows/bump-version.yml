@@ -1,70 +1,87 @@
-name: Auto Version Bump Based on Branch Type 🧠📦
+name: Auto Version Bump + Tag + Changelog 📦🏷️📝
 
 on:
   push:
     branches:
-      - 'develop'
-      - 'feature/**'
-      - 'release/**'
+      - "develop"
+      - "feature/**"
+      - "release/**"
 
 jobs:
   bump-version:
-    if: github.event.commits[0].message != 'ci: bump version [skip ci]'
+    if: "!contains(github.event.head_commit.message, 'ci: bump version [skip ci]')"
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: npm install
 
-    - name: Determine bump type
-      id: bump
-      run: |
-        BRANCH="${GITHUB_REF##*/}"
+      - name: Determine bump type
+        id: bump
+        run: |
+          if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
+            echo "bump_type=patch" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF" == refs/heads/release/* ]]; then
+            echo "bump_type=major" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF" == refs/heads/develop" ]]; then
+            echo "bump_type=minor" >> "$GITHUB_OUTPUT"
+          else
+            echo "Unknown branch pattern. Exiting."
+            exit 1
+          fi
 
-        if [[ "$GITHUB_REF" == refs/heads/feature/* ]]; then
-          echo "bump_type=patch" >> $GITHUB_OUTPUT
-        elif [[ "$GITHUB_REF" == refs/heads/release/* ]]; then
-          echo "bump_type=major" >> $GITHUB_OUTPUT
-        elif [[ "$GITHUB_REF" == refs/heads/develop ]]; then
-          echo "bump_type=minor" >> $GITHUB_OUTPUT
-        else
-          echo "Unknown branch pattern. Exiting."
-          exit 1
-        fi
+      - name: Bump version
+        id: versioning
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 
-    - name: Bump version
-      run: |
-        CURRENT_VERSION=$(node -p "require('./package.json').version")
-        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          case "${{ steps.bump.outputs.bump_type }}" in
+            major)
+              NEW_VERSION="$((MAJOR + 1)).0.0"
+              ;;
+            minor)
+              NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
+              ;;
+            patch)
+              NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+              ;;
+          esac
 
-        case "${{ steps.bump.outputs.bump_type }}" in
-          major)
-            NEW_VERSION="$((MAJOR + 1)).0.0"
-            ;;
-          minor)
-            NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
-            ;;
-          patch)
-            NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
-            ;;
-        esac
+          echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
 
-        echo "Bumping version: $CURRENT_VERSION → $NEW_VERSION"
-        npm version "$NEW_VERSION" --no-git-tag-version
+          echo "Bumping version: $CURRENT_VERSION → $NEW_VERSION"
+          npm version "$NEW_VERSION" --no-git-tag-version
 
-    - name: Commit & Push bumped version
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git commit -am "ci: bump version [skip ci]"
-        git push
+          echo "$NEW_VERSION" > .VERSION
+
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          echo "Generating changelog entry..."
+          echo "## Version $NEW_VERSION" > CHANGELOG.md
+          git log -n 10 --pretty=format:"- %s (%an)" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+      - name: Commit & Push bumped version and changelog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json .VERSION CHANGELOG.md
+          git commit -m "ci: bump version to $NEW_VERSION [skip ci]"
+          git push
+
+      - name: Create Git Tag
+        run: |
+          git tag "v$NEW_VERSION"
+          git push origin "v$NEW_VERSION"
