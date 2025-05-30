@@ -2,7 +2,9 @@
 
 A React application that allows users to search and display GIFs using the GIPHY API.
 
-### Version 1.0.0
+## Version
+
+### 1.0.0
 
 - Initial release
 - Search GIFs functionality
@@ -13,8 +15,6 @@ A React application that allows users to search and display GIFs using the GIPHY
 - Environment variables configuration
 
 ## Technologies
-
-This project is built with modern web technologies:
 
 ### Core
 
@@ -98,6 +98,61 @@ npm test -- --coverage
 - Each component has its own test file and snapshot
 - Mock implementations are used for API calls and custom hooks
 
+### Using `rerender` and `act` in Testing
+
+When testing React components or hooks, it is important to wrap any code that triggers state updates or side effects inside `act`. This ensures that all updates related to those actions are processed before you make assertions.
+
+#### Why wrap `rerender` in `act`?
+
+- **`rerender` can trigger effects:** When you call `rerender({ category: newCategory })`, React may run effects (like `useEffect`) or update state based on the new props.
+- **`act` batches updates:** Wrapping in `act` ensures React processes all updates and effects before your test continues. This prevents warnings and ensures your assertions see the final, settled state.
+- **Testing best practice:** React's testing utilities expect you to use `act` whenever you cause updates that might affect the DOM or component state.
+
+#### Example
+
+```jsx
+// rerendering with new props may trigger useEffect or state updates
+act(() => {
+  rerender({ category: newCategory });
+});
+// Now it's safe to make assertions about the updated state/UI
+```
+
+#### Gotcha
+
+If you forget to use `act`, you might see warnings like:
+
+> "An update to ... inside a test was not wrapped in act(...)"
+
+This means your test might be making assertions before React has finished updating.
+
+#### Summary
+
+Always use `act` when your test code causes React updates, including when calling `rerender` with new props. This ensures your tests are reliable and free of warnings.
+
+### Custom Hooks Testing
+
+When testing custom hooks, you can use the `renderHook` function from React Testing Library. This allows you to test the hook in isolation and verify its behavior.
+
+#### Example
+
+```jsx
+import { renderHook, act } from "@testing-library/react-hooks";
+import useCustomHook from "../hooks/useCustomHook";
+
+describe("useCustomHook", () => {
+  it("should do something", () => {
+    const { result } = renderHook(() => useCustomHook());
+
+    act(() => {
+      result.current.doSomething();
+    });
+
+    expect(result.current.value).toBe("expected value");
+  });
+});
+```
+
 ## Building for Production
 
 ```bash
@@ -123,7 +178,7 @@ Using the `index` of an array as a key is generally discouraged, especially if t
 
 Never use index into an array to create a key for a React component. This is an anti-pattern that can lead to bugs in your application. Instead, use a unique identifier for each item in the array, such as an ID or a unique property.
 
-### For example:
+#### Example
 
 ```jsx
 const items = ["apple", "banana", "orange"];
