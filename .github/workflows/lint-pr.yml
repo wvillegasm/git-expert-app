@@ -3,18 +3,25 @@ name: Lint on PR
 on:
   pull_request:
     branches: [develop, 'feature/**', 'release/**']
+  push:
+    branches: [develop, 'feature/**', 'release/**']
+
+# Set the permissions at the workflow level
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   lint:
-    name: Run ESLint
+    name: Run Linters
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetch all history for accurate linting
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch all history for accurate linting
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -25,23 +32,42 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
+      - name: Check code style with ESLint
+        id: eslint
         run: npm run lint
+        continue-on-error: true
 
       - name: Check formatting with Prettier
+        id: prettier
         run: npx prettier --check .
+        continue-on-error: true
 
-      # Optional: Auto-fix and commit if there are fixable issues
-      # - name: Try to fix ESLint issues
-      #   run: npm run lint:fix
-      #
-      # - name: Create Pull Request with fixes
-      #   if: github.event_name == 'pull_request' && steps.fix.outcome == 'success' && steps.fix.outputs.has-changes == 'true'
-      #   uses: peter-evans/create-pull-request@v5
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     commit-message: 'style: auto-fix ESLint issues'
-      #     title: 'style: auto-fix ESLint issues'
-      #     body: 'Automated fixes for ESLint issues'
-      #     branch: fix/eslint-issues-${{ github.event.pull_request.number }}
-      #     base: ${{ github.head_ref }}
+      # Auto-fix and create PR if there are fixable issues
+      - name: Try to fix ESLint issues
+        if: github.event_name == 'pull_request' && (steps.eslint.outcome == 'failure' || steps.prettier.outcome == 'failure')
+        id: fix
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          npm run lint:fix
+          git diff --quiet && git diff --staged --quiet || (git add . && git commit -m 'style: auto-fix ESLint and Prettier issues')
+          echo "has-changes=$(git diff --quiet && echo 'false' || echo 'true')" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request with fixes
+        if: github.event_name == 'pull_request' && steps.fix.outcome == 'success' && steps.fix.outputs.has-changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'style: auto-fix ESLint and Prettier issues'
+          title: 'style: auto-fix code style issues'
+          body: 'Automated fixes for ESLint and Prettier issues'
+          branch: fix/style-fixes-${{ github.event.pull_request.number }}
+          base: ${{ github.head_ref }}
+          delete-branch: true
+          labels: 'style, automated'
+          assignees: ${{ github.actor }}
+          reviewers: ${{ github.actor }}
+          draft: false
+          team-reviewers: |
+            owners
+            maintainers
