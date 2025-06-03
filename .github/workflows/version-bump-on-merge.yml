@@ -1,0 +1,114 @@
+name: Version Bump on Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - develop
+      - feature/**
+      - release/**
+
+jobs:
+  bump-version:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to get git history for changelog
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Determine version bump type
+        id: bump
+        run: |
+          # Get the base ref (target branch of the PR)
+          BASE_REF="${{ github.base_ref || github.event.pull_request.base.ref }}"
+
+          # Determine bump type based on branch pattern
+          if [[ $BASE_REF == release/* ]]; then
+            echo "bump_type=major" >> $GITHUB_OUTPUT
+          elif [[ $BASE_REF == "develop" ]]; then
+            echo "bump_type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "bump_type=patch" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Base ref: $BASE_REF"
+          echo "Bump type: ${{ steps.bump.outputs.bump_type }}"
+
+      - name: Bump version
+        id: versioning
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          echo "Current version: $CURRENT_VERSION"
+
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${CURRENT_VERSION}.0.0.0"
+
+          # Calculate new version based on bump type
+          case "${{ steps.bump.outputs.bump_type }}" in
+            major)
+              NEW_VERSION="$((MAJOR + 1)).0.0"
+              ;;
+            minor)
+              NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
+              ;;
+            *)
+              NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+              ;;
+          esac
+
+          echo "New version: $NEW_VERSION"
+
+          # Update package.json
+          npm version $NEW_VERSION --no-git-tag-version
+
+          # Generate changelog
+          echo "# Version $NEW_VERSION ($(date '+%Y-%m-%d'))" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "## Changes" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          # Get commits since last tag or from beginning
+          if git describe --abbrev=0 --tags &> /dev/null; then
+            git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s (%h)" --no-merges >> CHANGELOG.md
+          else
+            git log --pretty=format:"- %s (%h)" --no-merges >> CHANGELOG.md
+          fi
+
+          # Set outputs for next steps
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create version bump commit
+        run: |
+          git add package.json package-lock.json CHANGELOG.md
+          git commit -m "chore: release v$NEW_VERSION"
+          git push origin HEAD:develop
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/heads/develop')
+        with:
+          name: 'v${{ env.NEW_VERSION }}'
+          tag_name: 'v${{ env.NEW_VERSION }}'
+          body: '${{ env.NEW_VERSION }} Release'
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import { useState } from "react";
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 
 const MIN_CATEGORY_LENGTH = 2;
 
@@ -16,7 +16,7 @@ const MIN_CATEGORY_LENGTH = 2;
  */
 
 export const AddCategoryForm = ({ onAddCategory }) => {
-  const [gifCategory, setGifCategory] = useState("");
+  const [gifCategory, setGifCategory] = useState('');
 
   const handleOnChange = (e) => {
     setGifCategory(e.target.value);
@@ -32,19 +32,19 @@ export const AddCategoryForm = ({ onAddCategory }) => {
     }
 
     onAddCategory(gifCategoryFormatted);
-    setGifCategory("");
+    setGifCategory('');
   };
 
   return (
     <form
-      aria-label="add-category-form"
-      name="add-category-form"
-      className="space-bottom"
+      aria-label='add-category-form'
+      name='add-category-form'
+      className='space-bottom'
       onSubmit={handleOnSubmit}
     >
       <input
-        type="text"
-        placeholder="Search gifs"
+        type='text'
+        placeholder='Search gifs'
         onChange={handleOnChange}
         value={gifCategory}
       />

@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { convertBusinessDays, getChristmasDay, getColumbusDay, getHolidays, getInaugurationDay, getIndependenceDay, getJuneteenth, getLaborDay, getMemorialDay, getMLKDay, getNewYearsDay, getThanksgivingDay, getVeteransDay, getWashingtonBirthday } from '../../src/lib/convert-business-days.js';
+import {
+  convertBusinessDays,
+  getChristmasDay,
+  getColumbusDay,
+  getHolidays,
+  getInaugurationDay,
+  getIndependenceDay,
+  getJuneteenth,
+  getLaborDay,
+  getMemorialDay,
+  getMLKDay,
+  getNewYearsDay,
+  getThanksgivingDay,
+  getVeteransDay,
+  getWashingtonBirthday,
+} from '../../src/lib/convert-business-days.js';
 
 describe('Individual holiday functions', () => {
   it('returns January 20, 2025 when getMLKDay receives 2025', () => {
@@ -11,28 +26,36 @@ describe('Individual holiday functions', () => {
 
   it('returns 2025-01-20 for inauguration day holiday on 2025', () => {
     const inaugurationDay2025 = getInaugurationDay(2025);
-    const inaugurationDayFormattedDate = inaugurationDay2025.toISOString().split('T')[0];
+    const inaugurationDayFormattedDate = inaugurationDay2025
+      .toISOString()
+      .split('T')[0];
 
     expect(inaugurationDayFormattedDate).toBe('2025-01-20');
   });
 
   it('returns 2025-02-17 for Washington birthday holiday on 2025', () => {
     const washingtonBirthday2025 = getWashingtonBirthday(2025);
-    const washingtonBirthdayFormattedDate = washingtonBirthday2025.toISOString().split('T')[0];
+    const washingtonBirthdayFormattedDate = washingtonBirthday2025
+      .toISOString()
+      .split('T')[0];
 
     expect(washingtonBirthdayFormattedDate).toBe('2025-02-17');
   });
 
   it('returns 2025-05-26 for memorial day holiday on 2025', () => {
     const memorialDay2025 = getMemorialDay(2025);
-    const memorialDayFormattedDate = memorialDay2025.toISOString().split('T')[0];
+    const memorialDayFormattedDate = memorialDay2025
+      .toISOString()
+      .split('T')[0];
 
     expect(memorialDayFormattedDate).toBe('2025-05-26');
   });
 
   it('returns 2026-05-25 for memorial day holiday on 2026', () => {
     const memorialDay2026 = getMemorialDay(2026);
-    const memorialDayFormattedDate = memorialDay2026.toISOString().split('T')[0];
+    const memorialDayFormattedDate = memorialDay2026
+      .toISOString()
+      .split('T')[0];
 
     expect(memorialDayFormattedDate).toBe('2026-05-25');
   });
@@ -60,7 +83,9 @@ describe('Individual holiday functions', () => {
 
   it('returns 2026-10-12 for Columbus day holiday on 2026', () => {
     const columbusDay2026 = getColumbusDay(2026);
-    const columbusDayFormattedDate = columbusDay2026.toISOString().split('T')[0];
+    const columbusDayFormattedDate = columbusDay2026
+      .toISOString()
+      .split('T')[0];
 
     expect(columbusDayFormattedDate).toBe('2026-10-12');
   });
@@ -68,50 +93,63 @@ describe('Individual holiday functions', () => {
   // test Veterans Day for 2018 should be on 2018-11-12
   it('returns 2018-11-12 for Veterans Day holyday on 2018', () => {
     const veteransDay2018 = getVeteransDay(2018);
-    const veteransDayFormattedDate = veteransDay2018.toISOString().split('T')[0];
+    const veteransDayFormattedDate = veteransDay2018
+      .toISOString()
+      .split('T')[0];
 
     expect(veteransDayFormattedDate).toBe('2018-11-12');
   });
 
   it('returns 2017-11-10 for Veterans Day holyday on 2017', () => {
     const veteransDay2017 = getVeteransDay(2017);
-    const veteransDayFormattedDate = veteransDay2017.toISOString().split('T')[0];
+    const veteransDayFormattedDate = veteransDay2017
+      .toISOString()
+      .split('T')[0];
 
     expect(veteransDayFormattedDate).toBe('2017-11-10');
   });
 
   it('returns 2026-11-11 for Veterans Day holyday on 2026', () => {
     const veteransDay2026 = getVeteransDay(2026);
-    const veteransDayFormattedDate = veteransDay2026.toISOString().split('T')[0];
+    const veteransDayFormattedDate = veteransDay2026
+      .toISOString()
+      .split('T')[0];
 
     expect(veteransDayFormattedDate).toBe('2026-11-11');
   });
 
   it('returns 2026-07-03 for Independence day on 2026', () => {
     const independenceDay2026 = getIndependenceDay(2026);
-    const independenceDayFormattedDate = independenceDay2026.toISOString().split('T')[0];
+    const independenceDayFormattedDate = independenceDay2026
+      .toISOString()
+      .split('T')[0];
 
     expect(independenceDayFormattedDate).toBe('2026-07-03');
   });
 
   it('returns 2022-11-24 for Thanksgiving Day holyday on year 2022', () => {
     const thanksgivingDay2022 = getThanksgivingDay(2022);
-    const thanksgivingDayFormattedDate = thanksgivingDay2022.toISOString().split('T')[0];
+    const thanksgivingDayFormattedDate = thanksgivingDay2022
+      .toISOString()
+      .split('T')[0];
 
     expect(thanksgivingDayFormattedDate).toBe('2022-11-24');
   });
 
   it('returns 2022-12-26 for Christmas Day holiday on 2022', () => {
     const christmasDay2022 = getChristmasDay(2022);
-    const christmasDayFormattedDate = christmasDay2022.toISOString().split('T')[0];
+    const christmasDayFormattedDate = christmasDay2022
+      .toISOString()
+      .split('T')[0];
 
     expect(christmasDayFormattedDate).toBe('2022-12-26');
   });
 
-
   it('returns 2021-12-24 for Christmas Day holiday on 2021', () => {
     const christmasDay2026 = getChristmasDay(2021);
-    const christmasDayFormattedDate = christmasDay2026.toISOString().split('T')[0];
+    const christmasDayFormattedDate = christmasDay2026
+      .toISOString()
+      .split('T')[0];
 
     expect(christmasDayFormattedDate).toBe('2021-12-24');
   });
@@ -139,7 +177,9 @@ describe('Individual holiday functions', () => {
 
   it('returns all holidays for year 2025', () => {
     const allHolidays2025 = getHolidays(2025);
-    const allHolidaysFormattedDates = allHolidays2025.map(holiday => holiday.toISOString().split('T')[0]);
+    const allHolidaysFormattedDates = allHolidays2025.map(
+      (holiday) => holiday.toISOString().split('T')[0]
+    );
 
     expect(allHolidaysFormattedDates).toEqual([
       '2025-01-01',
@@ -158,7 +198,9 @@ describe('Individual holiday functions', () => {
 
   it('returns all holidays for year 2026', () => {
     const allHolidays2026 = getHolidays(2026);
-    const allHolidaysFormattedDates = allHolidays2026.map(holiday => holiday.toISOString().split('T')[0]);
+    const allHolidaysFormattedDates = allHolidays2026.map(
+      (holiday) => holiday.toISOString().split('T')[0]
+    );
 
     expect(allHolidaysFormattedDates).toEqual([
       '2026-01-01',
@@ -177,7 +219,9 @@ describe('Individual holiday functions', () => {
 
   it('returns all holidays for year 2027', () => {
     const allHolidays2027 = getHolidays(2027);
-    const allHolidaysFormattedDates = allHolidays2027.map(holiday => holiday.toISOString().split('T')[0]);
+    const allHolidaysFormattedDates = allHolidays2027.map(
+      (holiday) => holiday.toISOString().split('T')[0]
+    );
 
     expect(allHolidaysFormattedDates).toEqual([
       '2027-01-01',
@@ -196,7 +240,9 @@ describe('Individual holiday functions', () => {
 
   it('returns all holidays for year 2021', () => {
     const allHolidays2021 = getHolidays(2021);
-    const allHolidaysFormattedDates = allHolidays2021.map(holiday => holiday.toISOString().split('T')[0]);
+    const allHolidaysFormattedDates = allHolidays2021.map(
+      (holiday) => holiday.toISOString().split('T')[0]
+    );
 
     expect(allHolidaysFormattedDates).toEqual([
       '2021-01-01',
@@ -291,7 +337,7 @@ describe('convertBusinessDays function', () => {
     expect(convertBusinessDays('2023-12-18', '2024-01-05')).toBe(13);
   });
 
-   it('should handle Juneteenth correctly when it falls on a weekday', () => {
+  it('should handle Juneteenth correctly when it falls on a weekday', () => {
     // Juneteenth 2025 is on Thursday, June 19
     // 2025-06-18 (Wed), 2025-06-19 (Thu - Juneteenth), 2025-06-20 (Fri)
     expect(convertBusinessDays('2025-06-18', '2025-06-20')).toBe(2); // Wed, Fri
