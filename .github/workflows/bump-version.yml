@@ -86,7 +86,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ACTIONS_PAT }}
           commit-message: 'ci: bump version to ${{ steps.versioning.outputs.NEW_VERSION }} [skip ci]'
           title: 'ci: bump version to ${{ steps.versioning.outputs.NEW_VERSION }}'
           body: |
