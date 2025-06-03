@@ -4,7 +4,7 @@
 export const getNewYearsDay = (year) => {
   // January 1st of the given year
   const newYearsDay = new Date(year, 0, 1);
-   // Day of the week for January 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  // Day of the week for January 1st (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
   const dayOfWeek = newYearsDay.getDay();
 
   if (dayOfWeek === 0) {
@@ -67,7 +67,6 @@ export const getInaugurationDay = (year) => {
   return januaryTwentieth;
 };
 
-
 // Washington’s Birthday, the third Monday in February.
 export const getWashingtonBirthday = (year) => {
   const date = new Date(year, 1, 1); // February 1st
@@ -91,12 +90,11 @@ export const getMemorialDay = (year) => {
   // If it's Monday (1), subtract 0.
   // If it's Sunday (0), subtract 6 to get to the previous Monday.
   // If it's Tuesday (2), subtract 1.
-  const daysToSubtract = (dayOfWeek === 0) ? 6 : (dayOfWeek - 1);
+  const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
   date.setDate(date.getDate() - daysToSubtract);
   return date;
 };
-
 
 // Juneteenth National Independence Day, June 19.
 // If June 19 falls on a Saturday, the holiday is observed on Friday, June 18.
@@ -229,30 +227,37 @@ export const getHolidays = (year) => {
 const isBusinessDay = (date, yearHolidaysList) => {
   const day = date.getUTCDay();
 
-  if (day === 0 || day === 6) { // Sunday or Saturday
+  if (day === 0 || day === 6) {
+    // Sunday or Saturday
     return false;
   }
 
   // Normalize the current date to midnight for comparison
-  const currentDateNormalized = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()).getTime();
+  const currentDateNormalized = new Date(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate()
+  ).getTime();
 
   for (const holiday of yearHolidaysList) {
-    if (holiday) { // Ensure holiday is not null
-        // Normalize holiday date to midnight for comparison
-        const holidayNormalized = new Date(
-          holiday.getUTCFullYear(), holiday.getUTCMonth(), holiday.getUTCDate()
-        ).getTime();
+    if (holiday) {
+      // Ensure holiday is not null
+      // Normalize holiday date to midnight for comparison
+      const holidayNormalized = new Date(
+        holiday.getUTCFullYear(),
+        holiday.getUTCMonth(),
+        holiday.getUTCDate()
+      ).getTime();
 
-        // Check if the current date matches any holiday
-        if (currentDateNormalized === holidayNormalized) {
-            return false; // It's a holiday
-        }
+      // Check if the current date matches any holiday
+      if (currentDateNormalized === holidayNormalized) {
+        return false; // It's a holiday
+      }
     }
   }
 
   return true; // It's a business day
 };
-
 
 /**
  *
@@ -284,13 +289,20 @@ export const convertBusinessDays = (initialDateStr, endDateStr) => {
 
       if (inaugurationDay) {
         // Add Inauguration Day if it exists, ensuring no time part comparison issues
-        const inaugurationDayNormalizedTime = new Date(inaugurationDay.getFullYear(), inaugurationDay.getMonth(), inaugurationDay.getDate()).getTime();
+        const inaugurationDayNormalizedTime = new Date(
+          inaugurationDay.getFullYear(),
+          inaugurationDay.getMonth(),
+          inaugurationDay.getDate()
+        ).getTime();
         let alreadyExists = false;
-        for(const h of yearHolidaysForIsBusinessDay) {
-            if (new Date(h.getFullYear(), h.getMonth(), h.getDate()).getTime() === inaugurationDayNormalizedTime) {
-                alreadyExists = true;
-                break;
-            }
+        for (const h of yearHolidaysForIsBusinessDay) {
+          if (
+            new Date(h.getFullYear(), h.getMonth(), h.getDate()).getTime() ===
+            inaugurationDayNormalizedTime
+          ) {
+            alreadyExists = true;
+            break;
+          }
         }
         if (!alreadyExists) {
           yearHolidaysForIsBusinessDay.push(inaugurationDay);

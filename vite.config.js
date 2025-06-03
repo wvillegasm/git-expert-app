@@ -1,5 +1,5 @@
-import react from '@vitejs/plugin-react-swc'
-import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react-swc';
+import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -7,19 +7,16 @@ export default defineConfig({
   test: {
     // https://github.com/vitest-dev/vitest/blob/main/examples/react-testing-lib/vite.config.ts
     globals: true,
-    environment: "jsdom",
-    setupFiles: "./src/setupTests.js",
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js',
     env: {
-      VITE_GIPHY_API_KEY: 'test-api-key'
+      VITE_GIPHY_API_KEY: 'test-api-key',
     },
     // you might want to disable the `css: true` line, since we don't have
     // tests that rely on CSS -- and parsing CSS is slow.
     // I'm leaving it in here because often people want to parse CSS in tests.
     css: true,
-    reporters: [
-      'default',
-      ['junit', { outputFile: 'test-results.xml' }]
-    ]
+    reporters: ['default', ['junit', { outputFile: 'test-results.xml' }]],
   },
   server: {
     // to match sundae server expectation
@@ -27,4 +24,4 @@ export default defineConfig({
     // exit if port 3000 is in use (to avoid CORS errors)
     strict: true,
   },
-})
+});

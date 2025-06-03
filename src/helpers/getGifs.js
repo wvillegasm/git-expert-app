@@ -21,7 +21,7 @@ export const getGifs = async (category) => {
     }
 
     const gifs = data
-      .filter(item => item.images?.downsized_medium?.url)
+      .filter((item) => item.images?.downsized_medium?.url)
       .map(({ id, title, images }) => ({
         id,
         title,

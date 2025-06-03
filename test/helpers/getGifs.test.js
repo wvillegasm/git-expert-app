@@ -1,5 +1,4 @@
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { getGifs } from '../../src/helpers/getGifs';
 import { server } from '../mocks/server';
 
@@ -41,8 +40,16 @@ describe('getGifs helper function', () => {
   it('should process the API response and return mapped GIF objects', async () => {
     const category = 'dogs';
     const mockData = [
-      { id: '123', title: 'Dog 1', images: { downsized_medium: { url: 'http://dog1.gif' } } },
-      { id: '456', title: 'Dog 2', images: { downsized_medium: { url: 'http://dog2.gif' } } },
+      {
+        id: '123',
+        title: 'Dog 1',
+        images: { downsized_medium: { url: 'http://dog1.gif' } },
+      },
+      {
+        id: '456',
+        title: 'Dog 2',
+        images: { downsized_medium: { url: 'http://dog2.gif' } },
+      },
     ];
 
     server.use(
@@ -102,9 +109,20 @@ describe('getGifs helper function', () => {
   it('should handle items with missing or malformed image data gracefully', async () => {
     const category = 'memes';
     const mockData = [
-      { id: '789', title: 'Meme 1', images: { downsized_medium: { url: 'http://meme1.gif' } } },
-      { id: '101', title: 'Meme 2 (no image url)', images: { downsized_medium: {} } },
-      { id: '112', title: 'Meme 3 (no images prop)', /* images property missing */ },
+      {
+        id: '789',
+        title: 'Meme 1',
+        images: { downsized_medium: { url: 'http://meme1.gif' } },
+      },
+      {
+        id: '101',
+        title: 'Meme 2 (no image url)',
+        images: { downsized_medium: {} },
+      },
+      {
+        id: '112',
+        title: 'Meme 3 (no images prop)' /* images property missing */,
+      },
       { id: '113', title: 'Meme 4 (no downsized_medium prop)', images: {} },
     ];
 

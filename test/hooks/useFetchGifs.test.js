@@ -1,14 +1,21 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { useFetchGifs } from '../../src/hooks/useFetchGifs';
 import { server } from '../mocks/server';
 
 describe('useFetchGifs hook', () => {
   const mockCategory = 'Dragon Ball';
   const mockGifs = [
-    { id: 'abc', title: 'Goku GIF', images: { downsized_medium: { url: 'http://goku.gif' } } },
-    { id: 'def', title: 'Vegeta GIF', images: { downsized_medium: { url: 'http://vegeta.gif' } } },
+    {
+      id: 'abc',
+      title: 'Goku GIF',
+      images: { downsized_medium: { url: 'http://goku.gif' } },
+    },
+    {
+      id: 'def',
+      title: 'Vegeta GIF',
+      images: { downsized_medium: { url: 'http://vegeta.gif' } },
+    },
   ];
 
   beforeEach(() => {
@@ -75,11 +82,19 @@ describe('useFetchGifs hook', () => {
     const newCategory = 'Bleach';
 
     const initialGifs = [
-      { id: 'naruto1', title: 'Naruto GIF', images: { downsized_medium: { url: 'http://naruto.gif' } } }
+      {
+        id: 'naruto1',
+        title: 'Naruto GIF',
+        images: { downsized_medium: { url: 'http://naruto.gif' } },
+      },
     ];
 
     const newGifs = [
-      { id: 'ichigo1', title: 'Ichigo GIF', images: { downsized_medium: { url: 'http://ichigo.gif' } } }
+      {
+        id: 'ichigo1',
+        title: 'Ichigo GIF',
+        images: { downsized_medium: { url: 'http://ichigo.gif' } },
+      },
     ];
 
     // Mock API for initial category
@@ -105,7 +120,7 @@ describe('useFetchGifs hook', () => {
     // Wait for initial load
     await waitFor(() => {
       expect(result.current.images).toEqual([
-        { id: 'naruto1', title: 'Naruto GIF', url: 'http://naruto.gif' }
+        { id: 'naruto1', title: 'Naruto GIF', url: 'http://naruto.gif' },
       ]);
       expect(result.current.isLoading).toBe(false);
     });
@@ -121,10 +136,9 @@ describe('useFetchGifs hook', () => {
     // Wait for new data to load
     await waitFor(() => {
       expect(result.current.images).toEqual([
-        { id: 'ichigo1', title: 'Ichigo GIF', url: 'http://ichigo.gif' }
+        { id: 'ichigo1', title: 'Ichigo GIF', url: 'http://ichigo.gif' },
       ]);
       expect(result.current.isLoading).toBe(false);
     });
   });
-
 });

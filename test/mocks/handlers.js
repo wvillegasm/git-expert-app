@@ -7,19 +7,19 @@ const mockGifData = [
     title: 'Test GIF 1',
     images: {
       downsized_medium: {
-        url: 'https://media.giphy.com/media/123/giphy.gif'
-      }
-    }
+        url: 'https://media.giphy.com/media/123/giphy.gif',
+      },
+    },
   },
   {
     id: '456',
     title: 'Test GIF 2',
     images: {
       downsized_medium: {
-        url: 'https://media.giphy.com/media/456/giphy.gif'
-      }
-    }
-  }
+        url: 'https://media.giphy.com/media/456/giphy.gif',
+      },
+    },
+  },
 ];
 
 export const handlers = [
@@ -32,7 +32,7 @@ export const handlers = [
 
     // You can add different responses based on query parameters if needed
     return HttpResponse.json({
-      data: mockGifData.slice(0, parseInt(limit) || 2)
+      data: mockGifData.slice(0, parseInt(limit) || 2),
     });
   }),
 ];
