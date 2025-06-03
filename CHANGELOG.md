@@ -1,5 +1,11 @@
-## [Unreleased] - 2024-06-11
-
-### [version 0.0.1] - 2024-06-11
-
-- Updated `README.md` to provide the most relevant information about the project.
+## Version 0.0.2
+- Fix bump version (Wilfredo Villegas)
+- Fix lint pr (Wilfredo Villegas)
+- Update lint check in Git Actions (Wilfredo Villegas)
+- Fix ESLint check (Wilfredo Villegas)
+- Merge branch 'develop' of github.com:wvillegasm/git-expert-app into feature/implement-eslint-prettier (Wilfredo Villegas)
+- Fix ESLint warnings and errors (Wilfredo Villegas)
+- ci: add GitHub Actions workflows for versioning and code quality (Wilfredo Villegas)
+- Fix bump version (#19) (Wilfredo Villegas)
+- Fix bump version (#17) (Wilfredo Villegas)
+- Merge branch 'develop' of github.com:wvillegasm/git-expert-app into develop (Wilfredo Villegas)
