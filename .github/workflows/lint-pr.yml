@@ -8,7 +8,7 @@ jobs:
   lint:
     name: Run ESLint
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
       # Optional: Auto-fix and commit if there are fixable issues
       # - name: Try to fix ESLint issues
       #   run: npm run lint:fix
-      # 
+      #
       # - name: Create Pull Request with fixes
       #   if: github.event_name == 'pull_request' && steps.fix.outcome == 'success' && steps.fix.outputs.has-changes == 'true'
       #   uses: peter-evans/create-pull-request@v5
