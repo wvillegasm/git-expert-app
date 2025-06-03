@@ -30,6 +30,7 @@ export const getGifs = async (category) => {
 
     return gifs;
   } catch (error) {
+    console.error('Error fetching GIFs:', error);
     return [];
   }
 };

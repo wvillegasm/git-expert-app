@@ -26,9 +26,9 @@ export const handlers = [
   // Mock the Giphy API search endpoint
   http.get('https://api.giphy.com/v1/gifs/search', ({ request }) => {
     const url = new URL(request.url);
-    const query = url.searchParams.get('q');
+    // const query = url.searchParams.get('q');
     const limit = url.searchParams.get('limit');
-    const apiKey = url.searchParams.get('api_key');
+    // const apiKey = url.searchParams.get('api_key');
 
     // You can add different responses based on query parameters if needed
     return HttpResponse.json({
