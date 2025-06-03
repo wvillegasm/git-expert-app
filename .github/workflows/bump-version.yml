@@ -1,4 +1,4 @@
-name: Auto Version Bump + Tag + Changelog 📦🏷️📝
+name: Auto Version Bump + Changelog 📦📝
 
 on:
   push:
@@ -11,11 +11,15 @@ jobs:
   bump-version:
     if: "!contains(github.event.head_commit.message, 'ci: bump version [skip ci]')"
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node.js
@@ -64,6 +68,7 @@ jobs:
           esac
 
           echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
+          echo "::set-output name=NEW_VERSION::$NEW_VERSION"
 
           echo "Bumping version: $CURRENT_VERSION → $NEW_VERSION"
           npm version "$NEW_VERSION" --no-git-tag-version
@@ -78,15 +83,17 @@ jobs:
           git log -n 10 --pretty=format:"- %s (%an)" >> CHANGELOG.md
           echo "" >> CHANGELOG.md
 
-      - name: Commit & Push bumped version and changelog
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json .VERSION CHANGELOG.md
-          git commit -m "ci: bump version to $NEW_VERSION [skip ci]"
-          git push
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'ci: bump version to ${{ steps.versioning.outputs.NEW_VERSION }} [skip ci]'
+          title: 'ci: bump version to ${{ steps.versioning.outputs.NEW_VERSION }}'
+          body: |
+            Actualización automatizada de versión.
 
-      - name: Create Git Tag
-        run: |
-          git tag "v$NEW_VERSION"
-          git push origin "v$NEW_VERSION"
+            De versión: $CURRENT_VERSION
+            A versión: ${{ steps.versioning.outputs.NEW_VERSION }}
+          branch: 'version-bump/${{ github.ref_name }}-${{ steps.versioning.outputs.NEW_VERSION }}'
+          base: ${{ github.ref_name }}
+          labels: 'automated pr,version-bump'
