@@ -137,18 +137,18 @@ When testing custom hooks, you can use the `renderHook` function from React Test
 #### Example
 
 ```jsx
-import { renderHook, act } from "@testing-library/react-hooks";
-import useCustomHook from "../hooks/useCustomHook";
+import { renderHook, act } from '@testing-library/react-hooks';
+import useCustomHook from '../hooks/useCustomHook';
 
-describe("useCustomHook", () => {
-  it("should do something", () => {
+describe('useCustomHook', () => {
+  it('should do something', () => {
     const { result } = renderHook(() => useCustomHook());
 
     act(() => {
       result.current.doSomething();
     });
 
-    expect(result.current.value).toBe("expected value");
+    expect(result.current.value).toBe('expected value');
   });
 });
 ```
@@ -181,7 +181,7 @@ Never use index into an array to create a key for a React component. This is an 
 #### Example
 
 ```jsx
-const items = ["apple", "banana", "orange"];
+const items = ['apple', 'banana', 'orange'];
 const ItemList = () => {
   return (
     <ul>
@@ -199,9 +199,9 @@ Instead, use a unique identifier:
 
 ```jsx
 const items = [
-  { id: 1, name: "apple" },
-  { id: 2, name: "banana" },
-  { id: 3, name: "orange" },
+  { id: 1, name: 'apple' },
+  { id: 2, name: 'banana' },
+  { id: 3, name: 'orange' },
 ];
 const ItemList = () => {
   return (

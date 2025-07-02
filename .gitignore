@@ -53,3 +53,4 @@ $RECYCLE.BIN/
 
 # Optional: Vite cache
 .vite/
+test-results.xml

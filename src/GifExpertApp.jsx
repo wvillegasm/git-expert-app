@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { AddCategoryForm, GifGrid } from "./components";
+import { useState } from 'react';
+import { AddCategoryForm, GifGrid } from './components';
 
 export const GifExpertApp = () => {
   const [categories, setCategories] = useState([]);
